@@ -1,0 +1,20 @@
+name: Periodic Health Check
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  health_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check deployed app health
+        if: ${{ env.HEALTH_URL != '' }}
+        env:
+          HEALTH_URL: ${{ vars.HEALTH_URL }}
+        uses: jtalk/url-health-check-action@v5
+        with:
+          url: ${{ vars.HEALTH_URL }}
+          max-attempts: 3
+          retry-delay: 10s
